@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bataille Navale</title>
+  <meta name="theme-color" content="#04111f">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="ocean" aria-hidden="true">
+    <div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div>
+  </div>
+
+  <header class="topbar">
+    <h1 class="logo"><span class="logo-icon">⚓</span> Bataille <em>Navale</em></h1>
+    <button id="btn-sound" class="icon-btn" title="Son activé / coupé" aria-label="Son">🔊</button>
+  </header>
+
+  <main>
+    <!-- ============ ACCUEIL ============ -->
+    <section id="screen-lobby" class="screen active">
+      <div class="panel lobby-panel">
+        <p class="tagline">Affrontez votre famille sur les sept mers.</p>
+
+        <label class="field">
+          <span>Votre nom de capitaine</span>
+          <input id="input-name" maxlength="16" placeholder="Capitaine Crochet" autocomplete="nickname">
+        </label>
+
+        <div class="lobby-actions">
+          <div class="card">
+            <h2>Créer une partie</h2>
+            <p>Vous recevrez un code à envoyer à votre adversaire.</p>
+            <label class="check">
+              <input type="checkbox" id="opt-bonus">
+              <span>Rejouer après un tir touché</span>
+            </label>
+            <button id="btn-host" class="btn primary">⚓ Créer</button>
+          </div>
+          <div class="card">
+            <h2>Rejoindre</h2>
+            <p>Entrez le code reçu.</p>
+            <input id="input-code" class="code-input" maxlength="5" placeholder="CODE" autocomplete="off" spellcheck="false">
+            <button id="btn-join" class="btn">🧭 Rejoindre</button>
+          </div>
+        </div>
+        <p id="lobby-error" class="error" role="alert"></p>
+      </div>
+    </section>
+
+    <!-- ============ ATTENTE ============ -->
+    <section id="screen-wait" class="screen">
+      <div class="panel wait-panel">
+        <div class="radar big"><div class="sweep"></div><div class="blip"></div></div>
+        <h2 id="wait-title">Ouverture du port…</h2>
+        <div id="wait-code-box" class="code-box hidden">
+          <p>Code de la partie</p>
+          <div id="wait-code" class="code"></div>
+          <div class="row">
+            <button id="btn-copy" class="btn small">📋 Copier le lien</button>
+            <button id="btn-share" class="btn small hidden">📤 Partager</button>
+          </div>
+          <p class="muted">En attente d'un adversaire…</p>
+        </div>
+        <button id="btn-cancel" class="btn ghost small">Annuler</button>
+      </div>
+    </section>
+
+    <!-- ============ JEU ============ -->
+    <section id="screen-game" class="screen">
+      <div class="versus">
+        <span id="name-me" class="vs-name me"></span>
+        <span class="vs">VS</span>
+        <span id="name-opp" class="vs-name opp"></span>
+      </div>
+
+      <div id="banner" class="banner"></div>
+
+      <div class="boards">
+        <!-- Plateau adverse -->
+        <div id="enemy-wrap" class="board-wrap enemy">
+          <h3>Eaux ennemies</h3>
+          <div class="grid-frame">
+            <div id="grid-enemy" class="grid"></div>
+            <div class="radar-overlay"><div class="sweep"></div></div>
+          </div>
+          <ul id="fleet-enemy" class="fleet-status"></ul>
+        </div>
+
+        <!-- Mon plateau -->
+        <div id="me-wrap" class="board-wrap mine">
+          <h3 id="me-title">Votre flotte</h3>
+          <div class="grid-frame">
+            <div id="grid-me" class="grid"></div>
+          </div>
+          <ul id="fleet-me" class="fleet-status"></ul>
+        </div>
+
+        <!-- Chantier naval (placement) -->
+        <aside id="dock" class="panel dock">
+          <h3>Chantier naval</h3>
+          <p class="muted small">Choisissez un navire puis cliquez sur la grille.
+            <br><kbd>R</kbd> ou clic droit pour pivoter. Cliquez un navire posé pour le reprendre.</p>
+          <ul id="dock-ships" class="dock-ships"></ul>
+          <div class="row wrap">
+            <button id="btn-rotate" class="btn small">↻ Pivoter</button>
+            <button id="btn-random" class="btn small">🎲 Aléatoire</button>
+            <button id="btn-clear" class="btn small ghost">✖ Vider</button>
+          </div>
+          <button id="btn-ready" class="btn primary" disabled>Prêt au combat !</button>
+          <p id="dock-wait" class="muted small hidden"></p>
+        </aside>
+      </div>
+
+      <!-- Chat -->
+      <div id="chat" class="chat collapsed">
+        <button id="chat-toggle" class="chat-toggle">💬 <span>Messages</span> <b id="chat-badge" class="badge hidden">0</b></button>
+        <div class="chat-body">
+          <ul id="chat-log" class="chat-log"></ul>
+          <div class="emotes">
+            <button>👏</button><button>😅</button><button>🔥</button><button>😱</button><button>🎯</button><button>🏴‍☠️</button>
+          </div>
+          <form id="chat-form" class="chat-form">
+            <input id="chat-input" maxlength="140" placeholder="Message…" autocomplete="off">
+            <button class="btn small">➤</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fin de partie / déconnexion -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="panel modal-panel">
+      <div id="modal-icon" class="modal-icon"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-text"></p>
+      <div class="row center">
+        <button id="btn-rematch" class="btn primary">🔁 Revanche</button>
+        <button id="btn-home" class="btn ghost">Accueil</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
